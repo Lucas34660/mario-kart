@@ -125,6 +125,20 @@ function getUpcoming(matches) {
 function getAllPending(matches) {
   return TOPO.map(id=>matches[id]).filter(m=>m&&!m.result&&!isPureBye(m));
 }
+function normalizeTourn(data) {
+  if (!data?.matches) return data;
+  const matches = {};
+  for (const [id, m] of Object.entries(data.matches)) {
+    matches[id] = {
+      ...m,
+      players: Array.from({length: 4}, (_, i) => m.players?.[i] ?? null),
+      result: m.result
+        ? Array.from({length: 4}, (_, i) => m.result?.[i] ?? null)
+        : null,
+    };
+  }
+  return { ...data, matches };
+}
 function persist(data) {
   set(ref(db, "tournament"), data).catch(() => {});
 }
@@ -283,7 +297,7 @@ export default function App() {
   useEffect(() => {
     const tournRef = ref(db, "tournament");
     const unsub = onValue(tournRef, snap => {
-      if (snap.exists()) setTourn(snap.val());
+      if (snap.exists()) setTourn(normalizeTourn(snap.val()));
       setScreen(s => s === "loading" ? "main" : s);
     });
     return () => unsub();
@@ -292,7 +306,7 @@ export default function App() {
   function doLoad() {
     const tournRef = ref(db, "tournament");
     onValue(tournRef, snap => {
-      if (snap.exists()) setTourn(snap.val());
+      if (snap.exists()) setTourn(normalizeTourn(snap.val()));
     }, { onlyOnce: true });
   }
   function apply(t){setTourn(t);setSaving(true);persist(t);setTimeout(()=>setSaving(false),500);}
