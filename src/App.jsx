@@ -362,6 +362,14 @@ export default function App() {
       apply(t); setConfirm(null);
     }});
   }
+  function fullReset(){
+    setConfirm({msg:`⚠️ Gesamtes Turnier zurücksetzen?\n\nAlle Spieler und Ergebnisse werden unwiderruflich gelöscht.`,onOk:()=>{
+      setConfirm({msg:`🚨 LETZTE WARNUNG\n\nWirklich alles löschen?\nDanach müssen alle Spieler neu eingetragen werden.`,onOk:()=>{
+        set(ref(db,"tournament"),null).catch(()=>{});
+        setTourn(null); setConfirm(null);
+      }});
+    }});
+  }
 
   const M        = tourn?.matches||{};
   const upcoming = tourn?getUpcoming(M):[];
@@ -472,6 +480,10 @@ export default function App() {
                   :<button onClick={resetAll} style={{background:"rgba(239,68,68,0.12)",border:"1px solid rgba(239,68,68,0.3)"}}
                     className="text-red-400 text-xs px-2 py-1 rounded-lg">Neu</button>
                 }
+                {tourn&&(
+                  <button onClick={fullReset} style={{background:"rgba(239,68,68,0.15)",border:"1px solid rgba(239,68,68,0.4)"}}
+                    className="text-red-400 text-xs px-2 py-1 rounded-lg font-bold">🗑️ Reset</button>
+                )}
                 <div style={{background:"rgba(234,179,8,0.1)",border:"1px solid rgba(234,179,8,0.3)"}}
                   className="text-yellow-400 text-xs px-2 py-1 rounded-lg font-bold">👑</div>
                 <button onClick={doLogout} className="text-slate-600 hover:text-slate-400 text-xs px-1">Logout</button>
