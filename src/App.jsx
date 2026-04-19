@@ -798,12 +798,10 @@ export default function App() {
                       })}
                     </div>
                   </div>
-                  {ranking.length>=2&&(
-                    <div style={{background:"rgba(22,163,74,0.1)",border:"1px solid rgba(22,163,74,0.2)"}}
-                      className="rounded-lg px-3 py-2 mb-3 text-xs text-green-400">
-                      ✓ {ranking[0]}{ranking[1]?` & ${ranking[1]}`:""} qualifizieren sich weiter
-                    </div>
-                  )}
+                  <div style={{background:"rgba(22,163,74,0.1)",border:"1px solid rgba(22,163,74,0.2)",visibility:ranking.length>=2?"visible":"hidden"}}
+                    className="rounded-lg px-3 py-2 mb-3 text-xs text-green-400">
+                    ✓ {ranking[0]}{ranking[1]?` & ${ranking[1]}`:""} qualifizieren sich weiter
+                  </div>
                   <div className="flex gap-2 mb-2">
                     {modalLoc&&!allOk&&(
                       <button onClick={saveLocOnly} style={{background:"linear-gradient(135deg,#1d4ed8,#1e40af)"}}
