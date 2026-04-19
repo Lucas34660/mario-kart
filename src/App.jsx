@@ -712,8 +712,7 @@ export default function App() {
 
                 {/* ─ VERLIERERBRACKET ─ */}
                 <div className="flex gap-3 items-start">
-                  <div style={{width:164}} className="flex-shrink-0"/>
-                  {cfg.bracketCols.slice(1).map((col,ci)=>(
+                  {cfg.bracketCols.map((col,ci)=>(
                     <div key={ci} style={{width:164}} className="flex flex-col flex-shrink-0">
                       <div className="flex flex-col gap-1.5">
                         {col.lIds.length>0
