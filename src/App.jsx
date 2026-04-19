@@ -6,26 +6,26 @@ const PW = "admin1";
 
 // ── Feed map ──────────────────────────────────────────────────────────────────
 const FEEDS = {
-  W2_1:[{m:"W1_1",r:0},{m:"W1_1",r:1},{m:"W1_2",r:0},{m:"W1_2",r:1}],
-  W2_2:[{m:"W1_3",r:0},{m:"W1_3",r:1},{m:"W1_4",r:0},{m:"W1_4",r:1}],
-  W2_3:[{m:"W1_5",r:0},{m:"W1_5",r:1},{m:"W1_6",r:0},{m:"W1_6",r:1}],
-  W2_4:[{m:"W1_7",r:0},{m:"W1_7",r:1},{m:"W1_8",r:0},{m:"W1_8",r:1}],
-  W3_1:[{m:"W2_1",r:0},{m:"W2_1",r:1},{m:"W2_2",r:0},{m:"W2_2",r:1}],
-  W3_2:[{m:"W2_3",r:0},{m:"W2_3",r:1},{m:"W2_4",r:0},{m:"W2_4",r:1}],
+  W2_1:[{m:"W1_1",r:0},{m:"W1_3",r:0},{m:"W1_5",r:0},{m:"W1_7",r:0}],
+  W2_2:[{m:"W1_2",r:0},{m:"W1_4",r:0},{m:"W1_6",r:0},{m:"W1_8",r:0}],
+  W2_3:[{m:"W1_1",r:1},{m:"W1_3",r:1},{m:"W1_5",r:1},{m:"W1_7",r:1}],
+  W2_4:[{m:"W1_2",r:1},{m:"W1_4",r:1},{m:"W1_6",r:1},{m:"W1_8",r:1}],
+  W3_1:[{m:"W2_1",r:0},{m:"W2_2",r:0},{m:"W2_3",r:0},{m:"W2_4",r:0}],
+  W3_2:[{m:"W2_1",r:1},{m:"W2_2",r:1},{m:"W2_3",r:1},{m:"W2_4",r:1}],
   WF:  [{m:"W3_1",r:0},{m:"W3_1",r:1},{m:"W3_2",r:0},{m:"W3_2",r:1}],
-  L1_1:[{m:"W1_1",r:2},{m:"W1_1",r:3},{m:"W1_2",r:2},{m:"W1_2",r:3}],
-  L1_2:[{m:"W1_3",r:2},{m:"W1_3",r:3},{m:"W1_4",r:2},{m:"W1_4",r:3}],
-  L1_3:[{m:"W1_5",r:2},{m:"W1_5",r:3},{m:"W1_6",r:2},{m:"W1_6",r:3}],
-  L1_4:[{m:"W1_7",r:2},{m:"W1_7",r:3},{m:"W1_8",r:2},{m:"W1_8",r:3}],
-  L2_1:[{m:"L1_1",r:0},{m:"L1_1",r:1},{m:"W2_1",r:2},{m:"W2_1",r:3}],
-  L2_2:[{m:"L1_2",r:0},{m:"L1_2",r:1},{m:"W2_2",r:2},{m:"W2_2",r:3}],
-  L2_3:[{m:"L1_3",r:0},{m:"L1_3",r:1},{m:"W2_3",r:2},{m:"W2_3",r:3}],
-  L2_4:[{m:"L1_4",r:0},{m:"L1_4",r:1},{m:"W2_4",r:2},{m:"W2_4",r:3}],
-  L3_1:[{m:"L2_1",r:0},{m:"L2_1",r:1},{m:"W3_1",r:2},{m:"W3_1",r:3}],
-  L3_2:[{m:"L2_2",r:0},{m:"L2_2",r:1},{m:"L2_3",r:0},{m:"L2_3",r:1}],
-  L3_3:[{m:"L2_4",r:0},{m:"L2_4",r:1},{m:"W3_2",r:2},{m:"W3_2",r:3}],
-  L4_1:[{m:"L3_1",r:0},{m:"L3_1",r:1},{m:"L3_2",r:0},{m:"L3_2",r:1}],
-  L4_2:[{m:"L3_3",r:0},{m:"L3_3",r:1},{m:"WF",r:2},{m:"WF",r:3}],
+  L1_1:[{m:"W1_1",r:2},{m:"W1_3",r:2},{m:"W1_5",r:2},{m:"W1_7",r:2}],
+  L1_2:[{m:"W1_2",r:2},{m:"W1_4",r:2},{m:"W1_6",r:2},{m:"W1_8",r:2}],
+  L1_3:[{m:"W1_1",r:3},{m:"W1_3",r:3},{m:"W1_5",r:3},{m:"W1_7",r:3}],
+  L1_4:[{m:"W1_2",r:3},{m:"W1_4",r:3},{m:"W1_6",r:3},{m:"W1_8",r:3}],
+  L2_1:[{m:"L1_1",r:0},{m:"L1_2",r:0},{m:"W2_1",r:2},{m:"W2_2",r:2}],
+  L2_2:[{m:"L1_1",r:1},{m:"L1_2",r:1},{m:"W2_1",r:3},{m:"W2_2",r:3}],
+  L2_3:[{m:"L1_3",r:0},{m:"L1_4",r:0},{m:"W2_3",r:2},{m:"W2_4",r:2}],
+  L2_4:[{m:"L1_3",r:1},{m:"L1_4",r:1},{m:"W2_3",r:3},{m:"W2_4",r:3}],
+  L3_1:[{m:"L2_1",r:0},{m:"L2_2",r:0},{m:"W3_1",r:2},{m:"W3_2",r:2}],
+  L3_2:[{m:"L2_1",r:1},{m:"L2_3",r:0},{m:"W3_1",r:3},{m:"L2_4",r:0}],
+  L3_3:[{m:"L2_2",r:1},{m:"L2_3",r:1},{m:"L2_4",r:1},{m:"W3_2",r:3}],
+  L4_1:[{m:"L3_1",r:0},{m:"L3_2",r:0},{m:"L3_3",r:0},{m:"WF",r:2}],
+  L4_2:[{m:"L3_1",r:1},{m:"L3_2",r:1},{m:"L3_3",r:1},{m:"WF",r:3}],
   LF:  [{m:"L4_1",r:0},{m:"L4_1",r:1},{m:"L4_2",r:0},{m:"L4_2",r:1}],
   GF:  [{m:"WF",r:0},{m:"WF",r:1},{m:"LF",r:0},{m:"LF",r:1}],
 };
@@ -53,9 +53,15 @@ const TOPO = [
   "WF","L4_1","L4_2","LF","GF",
 ];
 
-const MEDALS    = ["🥇","🥈","🥉","4️⃣"];
 const PLACE_LBL = ["1. Platz","2. Platz","3. Platz","4. Platz"];
-const PLACE_COL = ["text-yellow-300","text-slate-300","text-amber-500","text-slate-500"];
+function placeIcon(matchId, i) {
+  if (matchId === "GF") return ["🥇","🥈","🥉","4️⃣"][i];
+  return i <= 1 ? "⭐" : "🔴";
+}
+function placeColor(matchId, i) {
+  if (matchId === "GF") return ["text-yellow-300","text-slate-300","text-amber-500","text-slate-500"][i];
+  return i <= 1 ? "text-yellow-300" : "text-red-500";
+}
 
 function humanId(id) {
   if (id==="WF") return "Winners Final";
@@ -195,8 +201,8 @@ function BCard({match,isAdmin,onOpen}) {
       {done?(
         <div className="space-y-px">
           {result.map((p,i)=>p&&(
-            <div key={i} className={`flex items-center gap-1 text-[10px] ${PLACE_COL[i]}`}>
-              <span className="leading-none">{MEDALS[i]}</span>
+            <div key={i} className={`flex items-center gap-1 text-[10px] ${placeColor(id,i)}`}>
+              <span className="leading-none">{placeIcon(id,i)}</span>
               <span className={`truncate ${i<2?"text-white":""}`} style={{maxWidth:110}}>{p}</span>
             </div>
           ))}
@@ -718,7 +724,7 @@ export default function App() {
                             className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm transition-all hover:scale-[1.01]">
                             <span className={ranked?(isW?"text-yellow-200 font-medium":"text-slate-400"):"text-slate-300"}>{p}</span>
                             {ranked
-                              ?<span className={`font-bold text-xs ${PLACE_COL[idx]}`}>{MEDALS[idx]} {PLACE_LBL[idx]}</span>
+                              ?<span className={`font-bold text-xs ${placeColor(modal,idx)}`}>{placeIcon(modal,idx)} {PLACE_LBL[idx]}</span>
                               :<span className="text-slate-600 text-xs">Antippen</span>}
                           </button>
                         );
