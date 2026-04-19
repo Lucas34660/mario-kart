@@ -433,7 +433,7 @@ export default function App() {
     setConfirm({msg:`"${humanId(id)}" und Folge-Matches zurücksetzen?`,onOk:()=>{
       const cfg=getCfgFromTourn(tourn);
       let nm=cascadeReset(tourn.matches,id,cfg.feeds); nm=autoHandleByes(nm,cfg);
-      const t={...tourn,matches:nm}; if(["GF","WF","LF"].includes(id)) delete t.champion;
+      const t={...tourn,matches:nm}; if(!nm.GF?.result) delete t.champion;
       apply(t); closeModal(); setConfirm(null);
     }});
   }
