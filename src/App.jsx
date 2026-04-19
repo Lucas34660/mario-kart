@@ -273,7 +273,7 @@ function BCard({match,isAdmin,onOpen}) {
             </div>
           ))}
         </div>
-      ):ready?(
+      ):real.length>0?(
         <div className="space-y-px">
           {players.map((p,i)=>(
             <div key={i} className={`text-[10px] truncate ${p?"text-slate-200":"text-slate-700 italic"}`}
