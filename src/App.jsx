@@ -4,54 +4,118 @@ import { db } from "./firebase";
 
 const PW = "admin1";
 
-// ── Feed map ──────────────────────────────────────────────────────────────────
-const FEEDS = {
-  W2_1:[{m:"W1_1",r:0},{m:"W1_3",r:0},{m:"W1_5",r:0},{m:"W1_7",r:0}],
-  W2_2:[{m:"W1_2",r:0},{m:"W1_4",r:0},{m:"W1_6",r:0},{m:"W1_8",r:0}],
-  W2_3:[{m:"W1_1",r:1},{m:"W1_3",r:1},{m:"W1_5",r:1},{m:"W1_7",r:1}],
-  W2_4:[{m:"W1_2",r:1},{m:"W1_4",r:1},{m:"W1_6",r:1},{m:"W1_8",r:1}],
-  W3_1:[{m:"W2_1",r:0},{m:"W2_2",r:0},{m:"W2_3",r:0},{m:"W2_4",r:0}],
-  W3_2:[{m:"W2_1",r:1},{m:"W2_2",r:1},{m:"W2_3",r:1},{m:"W2_4",r:1}],
-  WF:  [{m:"W3_1",r:0},{m:"W3_1",r:1},{m:"W3_2",r:0},{m:"W3_2",r:1}],
-  L1_1:[{m:"W1_1",r:2},{m:"W1_3",r:2},{m:"W1_5",r:2},{m:"W1_7",r:2}],
-  L1_2:[{m:"W1_2",r:2},{m:"W1_4",r:2},{m:"W1_6",r:2},{m:"W1_8",r:2}],
-  L1_3:[{m:"W1_1",r:3},{m:"W1_3",r:3},{m:"W1_5",r:3},{m:"W1_7",r:3}],
-  L1_4:[{m:"W1_2",r:3},{m:"W1_4",r:3},{m:"W1_6",r:3},{m:"W1_8",r:3}],
-  L2_1:[{m:"L1_1",r:0},{m:"L1_2",r:0},{m:"W2_1",r:2},{m:"W2_2",r:2}],
-  L2_2:[{m:"L1_1",r:1},{m:"L1_2",r:1},{m:"W2_1",r:3},{m:"W2_2",r:3}],
-  L2_3:[{m:"L1_3",r:0},{m:"L1_4",r:0},{m:"W2_3",r:2},{m:"W2_4",r:2}],
-  L2_4:[{m:"L1_3",r:1},{m:"L1_4",r:1},{m:"W2_3",r:3},{m:"W2_4",r:3}],
-  L3_1:[{m:"L2_1",r:0},{m:"L2_2",r:0},{m:"W3_1",r:2},{m:"W3_2",r:2}],
-  L3_2:[{m:"L2_1",r:1},{m:"L2_3",r:0},{m:"W3_1",r:3},{m:"L2_4",r:0}],
-  L3_3:[{m:"L2_2",r:1},{m:"L2_3",r:1},{m:"L2_4",r:1},{m:"W3_2",r:3}],
-  L4_1:[{m:"L3_1",r:0},{m:"L3_2",r:0},{m:"L3_3",r:0},{m:"WF",r:2}],
-  L4_2:[{m:"L3_1",r:1},{m:"L3_2",r:1},{m:"L3_3",r:1},{m:"WF",r:3}],
-  LF:  [{m:"L4_1",r:0},{m:"L4_1",r:1},{m:"L4_2",r:0},{m:"L4_2",r:1}],
-  GF:  [{m:"WF",r:0},{m:"WF",r:1},{m:"LF",r:0},{m:"LF",r:1}],
+// ── Bracket configs (2-R1 ≤8P · 4-R1 ≤16P · 8-R1 ≤32P) ─────────────────────
+const BRACKET_CONFIGS = {
+  2: {
+    r1Count: 2,
+    feeds: {
+      WF:  [{m:"W1_1",r:0},{m:"W1_2",r:0},{m:"W1_1",r:1},{m:"W1_2",r:1}],
+      L1_1:[{m:"W1_1",r:2},{m:"W1_2",r:2},{m:"W1_1",r:3},{m:"W1_2",r:3}],
+      LF:  [{m:"L1_1",r:0},{m:"L1_1",r:1},{m:"WF",r:2},{m:"WF",r:3}],
+      GF:  [{m:"WF",r:0},{m:"WF",r:1},{m:"LF",r:0},{m:"LF",r:1}],
+    },
+    allIds: ["W1_1","W1_2","WF","L1_1","LF","GF"],
+    topo:   ["W1_1","W1_2","WF","L1_1","LF","GF"],
+    bracketCols: [
+      {label:"R1",         wIds:["W1_1","W1_2"], lIds:[]},
+      {label:"Halbfinale", wIds:["WF"],          lIds:["L1_1"]},
+      {label:"L-Final",    wIds:[],              lIds:["LF"]},
+    ],
+  },
+  4: {
+    r1Count: 4,
+    feeds: {
+      W2_1:[{m:"W1_1",r:0},{m:"W1_2",r:0},{m:"W1_3",r:0},{m:"W1_4",r:0}],
+      W2_2:[{m:"W1_1",r:1},{m:"W1_2",r:1},{m:"W1_3",r:1},{m:"W1_4",r:1}],
+      WF:  [{m:"W2_1",r:0},{m:"W2_1",r:1},{m:"W2_2",r:0},{m:"W2_2",r:1}],
+      L1_1:[{m:"W1_1",r:2},{m:"W1_2",r:2},{m:"W1_3",r:2},{m:"W1_4",r:2}],
+      L1_2:[{m:"W1_1",r:3},{m:"W1_2",r:3},{m:"W1_3",r:3},{m:"W1_4",r:3}],
+      L2_1:[{m:"L1_1",r:0},{m:"L1_2",r:0},{m:"W2_1",r:2},{m:"W2_2",r:2}],
+      L2_2:[{m:"L1_1",r:1},{m:"L1_2",r:1},{m:"W2_1",r:3},{m:"W2_2",r:3}],
+      L3_1:[{m:"L2_1",r:0},{m:"L2_2",r:0},{m:"WF",r:2}],
+      L3_2:[{m:"L2_1",r:1},{m:"L2_2",r:1},{m:"WF",r:3}],
+      LF:  [{m:"L3_1",r:0},{m:"L3_1",r:1},{m:"L3_2",r:0},{m:"L3_2",r:1}],
+      GF:  [{m:"WF",r:0},{m:"WF",r:1},{m:"LF",r:0},{m:"LF",r:1}],
+    },
+    allIds: [
+      "W1_1","W1_2","W1_3","W1_4",
+      "W2_1","W2_2","WF",
+      "L1_1","L1_2","L2_1","L2_2","L3_1","L3_2","LF","GF",
+    ],
+    topo: [
+      "W1_1","W1_2","W1_3","W1_4",
+      "L1_1","L1_2","W2_1","W2_2",
+      "L2_1","L2_2","WF","L3_1","L3_2","LF","GF",
+    ],
+    bracketCols: [
+      {label:"R1",         wIds:["W1_1","W1_2","W1_3","W1_4"], lIds:[]},
+      {label:"R2",         wIds:["W2_1","W2_2"],               lIds:["L1_1","L1_2"]},
+      {label:"Halbfinale", wIds:["WF"],                        lIds:["L2_1","L2_2"]},
+      {label:"L-R3",       wIds:[],                            lIds:["L3_1","L3_2"]},
+      {label:"L-Final",    wIds:[],                            lIds:["LF"]},
+    ],
+  },
+  8: {
+    r1Count: 8,
+    feeds: {
+      W2_1:[{m:"W1_1",r:0},{m:"W1_3",r:0},{m:"W1_5",r:0},{m:"W1_7",r:0}],
+      W2_2:[{m:"W1_2",r:0},{m:"W1_4",r:0},{m:"W1_6",r:0},{m:"W1_8",r:0}],
+      W2_3:[{m:"W1_1",r:1},{m:"W1_3",r:1},{m:"W1_5",r:1},{m:"W1_7",r:1}],
+      W2_4:[{m:"W1_2",r:1},{m:"W1_4",r:1},{m:"W1_6",r:1},{m:"W1_8",r:1}],
+      W3_1:[{m:"W2_1",r:0},{m:"W2_2",r:0},{m:"W2_3",r:0},{m:"W2_4",r:0}],
+      W3_2:[{m:"W2_1",r:1},{m:"W2_2",r:1},{m:"W2_3",r:1},{m:"W2_4",r:1}],
+      WF:  [{m:"W3_1",r:0},{m:"W3_1",r:1},{m:"W3_2",r:0},{m:"W3_2",r:1}],
+      L1_1:[{m:"W1_1",r:2},{m:"W1_3",r:2},{m:"W1_5",r:2},{m:"W1_7",r:2}],
+      L1_2:[{m:"W1_2",r:2},{m:"W1_4",r:2},{m:"W1_6",r:2},{m:"W1_8",r:2}],
+      L1_3:[{m:"W1_1",r:3},{m:"W1_3",r:3},{m:"W1_5",r:3},{m:"W1_7",r:3}],
+      L1_4:[{m:"W1_2",r:3},{m:"W1_4",r:3},{m:"W1_6",r:3},{m:"W1_8",r:3}],
+      L2_1:[{m:"L1_1",r:0},{m:"L1_2",r:0},{m:"W2_1",r:2},{m:"W2_2",r:2}],
+      L2_2:[{m:"L1_1",r:1},{m:"L1_2",r:1},{m:"W2_1",r:3},{m:"W2_2",r:3}],
+      L2_3:[{m:"L1_3",r:0},{m:"L1_4",r:0},{m:"W2_3",r:2},{m:"W2_4",r:2}],
+      L2_4:[{m:"L1_3",r:1},{m:"L1_4",r:1},{m:"W2_3",r:3},{m:"W2_4",r:3}],
+      L3_1:[{m:"L2_1",r:0},{m:"L2_2",r:0},{m:"W3_1",r:2},{m:"W3_2",r:2}],
+      L3_2:[{m:"L2_1",r:1},{m:"L2_3",r:0},{m:"W3_1",r:3},{m:"L2_4",r:0}],
+      L3_3:[{m:"L2_2",r:1},{m:"L2_3",r:1},{m:"L2_4",r:1},{m:"W3_2",r:3}],
+      L4_1:[{m:"L3_1",r:0},{m:"L3_2",r:0},{m:"L3_3",r:0},{m:"WF",r:2}],
+      L4_2:[{m:"L3_1",r:1},{m:"L3_2",r:1},{m:"L3_3",r:1},{m:"WF",r:3}],
+      LF:  [{m:"L4_1",r:0},{m:"L4_1",r:1},{m:"L4_2",r:0},{m:"L4_2",r:1}],
+      GF:  [{m:"WF",r:0},{m:"WF",r:1},{m:"LF",r:0},{m:"LF",r:1}],
+    },
+    allIds: [
+      "W1_1","W1_2","W1_3","W1_4","W1_5","W1_6","W1_7","W1_8",
+      "W2_1","W2_2","W2_3","W2_4","W3_1","W3_2","WF",
+      "L1_1","L1_2","L1_3","L1_4","L2_1","L2_2","L2_3","L2_4",
+      "L3_1","L3_2","L3_3","L4_1","L4_2","LF","GF",
+    ],
+    topo: [
+      "W1_1","W1_2","W1_3","W1_4","W1_5","W1_6","W1_7","W1_8",
+      "L1_1","L1_2","L1_3","L1_4","W2_1","W2_2","W2_3","W2_4",
+      "L2_1","L2_2","L2_3","L2_4","W3_1","W3_2","L3_1","L3_2","L3_3",
+      "WF","L4_1","L4_2","LF","GF",
+    ],
+    bracketCols: [
+      {label:"R1",         wIds:["W1_1","W1_2","W1_3","W1_4","W1_5","W1_6","W1_7","W1_8"], lIds:[]},
+      {label:"R2",         wIds:["W2_1","W2_2","W2_3","W2_4"],          lIds:["L1_1","L1_2","L1_3","L1_4"]},
+      {label:"R3",         wIds:["W3_1","W3_2"],                        lIds:["L2_1","L2_2","L2_3","L2_4"]},
+      {label:"Halbfinale", wIds:["WF"],                                 lIds:["L3_1","L3_2","L3_3"]},
+      {label:"L-R4",       wIds:[],                                     lIds:["L4_1","L4_2"]},
+      {label:"L-Final",    wIds:[],                                     lIds:["LF"]},
+    ],
+  },
 };
 
-const ALL_IDS = [
-  "W1_1","W1_2","W1_3","W1_4","W1_5","W1_6","W1_7","W1_8",
-  "W2_1","W2_2","W2_3","W2_4","W3_1","W3_2","WF",
-  "L1_1","L1_2","L1_3","L1_4","L2_1","L2_2","L2_3","L2_4",
-  "L3_1","L3_2","L3_3","L4_1","L4_2","LF","GF",
-];
-
-const BRACKET_COLS = [
-  { label:"R1",          wIds:["W1_1","W1_2","W1_3","W1_4","W1_5","W1_6","W1_7","W1_8"], lIds:[] },
-  { label:"R2",          wIds:["W2_1","W2_2","W2_3","W2_4"],           lIds:["L1_1","L1_2","L1_3","L1_4"] },
-  { label:"R3",          wIds:["W3_1","W3_2"],                         lIds:["L2_1","L2_2","L2_3","L2_4"] },
-  { label:"Halbfinale",  wIds:["WF"],                                  lIds:["L3_1","L3_2","L3_3"] },
-  { label:"L-R4",        wIds:[],                                       lIds:["L4_1","L4_2"] },
-  { label:"L-Final",     wIds:[],                                       lIds:["LF"] },
-];
-
-const TOPO = [
-  "W1_1","W1_2","W1_3","W1_4","W1_5","W1_6","W1_7","W1_8",
-  "L1_1","L1_2","L1_3","L1_4","W2_1","W2_2","W2_3","W2_4",
-  "L2_1","L2_2","L2_3","L2_4","W3_1","W3_2","L3_1","L3_2","L3_3",
-  "WF","L4_1","L4_2","LF","GF",
-];
+function getBracketConfig(playerCount) {
+  if (playerCount <= 8)  return BRACKET_CONFIGS[2];
+  if (playerCount <= 16) return BRACKET_CONFIGS[4];
+  return BRACKET_CONFIGS[8];
+}
+function getCfgFromTourn(t) {
+  if (!t) return BRACKET_CONFIGS[8];
+  if (t.r1Count) return BRACKET_CONFIGS[t.r1Count] || BRACKET_CONFIGS[8];
+  if (t.matches?.W1_8) return BRACKET_CONFIGS[8];
+  if (t.matches?.W1_4) return BRACKET_CONFIGS[4];
+  return BRACKET_CONFIGS[2];
+}
 
 const PLACE_LBL = ["1. Platz","2. Platz","3. Platz","4. Platz"];
 function placeIcon(matchId, i) {
@@ -77,44 +141,46 @@ function sectionLabel(id) {
 }
 
 // ── Bracket logic ─────────────────────────────────────────────────────────────
-function initMatches(p32) {
+function initMatches(players, cfg) {
   const m = {};
-  ALL_IDS.forEach(id => { m[id]={id,players:[null,null,null,null],result:null,location:null}; });
-  for (let i=0;i<8;i++) m[`W1_${i+1}`].players=p32.slice(i*4,i*4+4);
+  cfg.allIds.forEach(id => { m[id]={id,players:[null,null,null,null],result:null,location:null}; });
+  const padded = [...players];
+  while (padded.length < cfg.r1Count * 4) padded.push(null);
+  for (let i=0; i<cfg.r1Count; i++) m[`W1_${i+1}`].players = padded.slice(i*4, i*4+4);
   return m;
 }
-function sourcesDone(matches,id) {
-  const f=FEEDS[id]; if(!f) return true;
+function sourcesDone(matches, id, feeds) {
+  const f=feeds[id]; if(!f) return true;
   return [...new Set(f.map(x=>x.m))].every(mid=>!!matches[mid]?.result);
 }
-function propagateOne(matches,src,result) {
+function propagateOne(matches, src, result, feeds) {
   const nm={...matches};
-  Object.entries(FEEDS).forEach(([tid,feeds])=>{
+  Object.entries(feeds).forEach(([tid,fds])=>{
     const np=[...nm[tid].players]; let ch=false;
-    feeds.forEach((f,s)=>{ if(f.m===src){np[s]=result[f.r]??null;ch=true;} });
+    fds.forEach((f,s)=>{ if(f.m===src){np[s]=result[f.r]??null;ch=true;} });
     if(ch) nm[tid]={...nm[tid],players:np};
   });
   return nm;
 }
-function autoHandleByes(mi) {
+function autoHandleByes(mi, cfg) {
   let nm={...mi}; let ch=true;
   while(ch){ ch=false;
-    for(const id of ALL_IDS){
-      const m=nm[id]; if(m.result) continue; if(!sourcesDone(nm,id)) continue;
+    for(const id of cfg.topo){
+      const m=nm[id]; if(m.result) continue; if(!sourcesDone(nm,id,cfg.feeds)) continue;
       const real=m.players.filter(Boolean); if(real.length>=2) continue;
       const result=real.length===1?[real[0],null,null,null]:[null,null,null,null];
-      nm[id]={...nm[id],result}; nm=propagateOne(nm,id,result); ch=true;
+      nm[id]={...nm[id],result}; nm=propagateOne(nm,id,result,cfg.feeds); ch=true;
     }
   }
   return nm;
 }
-function cascadeReset(matches,src) {
+function cascadeReset(matches, src, feeds) {
   let nm={...matches}; const q=[src],seen=new Set();
   while(q.length){ const mid=q.shift(); if(seen.has(mid)) continue; seen.add(mid);
     nm[mid]={...nm[mid],result:null};
-    Object.entries(FEEDS).forEach(([tid,feeds])=>{
-      if(feeds.some(f=>f.m===mid)){ const np=[...nm[tid].players];
-        feeds.forEach((f,s)=>{if(f.m===mid)np[s]=null;}); nm[tid]={...nm[tid],players:np};
+    Object.entries(feeds).forEach(([tid,fds])=>{
+      if(fds.some(f=>f.m===mid)){ const np=[...nm[tid].players];
+        fds.forEach((f,s)=>{if(f.m===mid)np[s]=null;}); nm[tid]={...nm[tid],players:np};
         if(!seen.has(tid))q.push(tid);
       }
     });
@@ -125,11 +191,11 @@ function isPureBye(m) {
   if(!m) return true;
   return !m.players.some(Boolean)&&!!m.result&&!m.result.some(Boolean);
 }
-function getUpcoming(matches) {
-  return TOPO.map(id=>matches[id]).filter(m=>m&&!m.result&&m.location&&!isPureBye(m));
+function getUpcoming(matches, topo) {
+  return topo.map(id=>matches[id]).filter(m=>m&&!m.result&&m.location&&!isPureBye(m));
 }
-function getAllPending(matches) {
-  return TOPO.map(id=>matches[id]).filter(m=>m&&!m.result&&!isPureBye(m));
+function getAllPending(matches, topo) {
+  return topo.map(id=>matches[id]).filter(m=>m&&!m.result&&!isPureBye(m));
 }
 function normalizeTourn(data) {
   if (!data?.matches) return data;
@@ -322,10 +388,10 @@ export default function App() {
   function removePlayer(i){setRegList(l=>l.filter((_,j)=>j!==i));}
   function startTournament(){
     if(regList.length<2) return;
+    const cfg=getBracketConfig(regList.length);
     const sh=[...regList].sort(()=>Math.random()-0.5);
-    while(sh.length<32)sh.push(null);
-    let m=initMatches(sh); m=autoHandleByes(m);
-    apply({players:[...regList],matches:m,started:Date.now()});
+    let m=initMatches(sh,cfg); m=autoHandleByes(m,cfg);
+    apply({players:[...regList],r1Count:cfg.r1Count,matches:m,started:Date.now()});
     setRegList([]);setRegInput("");setScreen("main");
   }
   function openModal(id){
@@ -348,22 +414,23 @@ export default function App() {
     if(ranking.length!==avail.length||avail.length===0) return;
     const result=[...ranking,null,null,null,null].slice(0,4);
     let nm={...tourn.matches}; nm[modal]={...nm[modal],result,location:modalLoc};
-    nm=propagateOne(nm,modal,result); nm=autoHandleByes(nm);
+    nm=propagateOne(nm,modal,result,cfg.feeds); nm=autoHandleByes(nm,cfg);
     const t={...tourn,matches:nm}; if(modal==="GF") t.champion=result[0];
     apply(t); closeModal();
   }
   function doResetMatch(id){
     setConfirm({msg:`"${humanId(id)}" und Folge-Matches zurücksetzen?`,onOk:()=>{
-      let nm=cascadeReset(tourn.matches,id); nm=autoHandleByes(nm);
+      const cfg=getCfgFromTourn(tourn);
+      let nm=cascadeReset(tourn.matches,id,cfg.feeds); nm=autoHandleByes(nm,cfg);
       const t={...tourn,matches:nm}; if(["GF","WF","LF"].includes(id)) delete t.champion;
       apply(t); closeModal(); setConfirm(null);
     }});
   }
   function resetAll(){
     setConfirm({msg:`Neues Zufallslos für alle ${tourn.players.length} Spieler?\nAlle Ergebnisse werden gelöscht.`,onOk:()=>{
+      const cfg=getCfgFromTourn(tourn);
       const sh=[...tourn.players].sort(()=>Math.random()-0.5);
-      while(sh.length<32)sh.push(null);
-      let m=initMatches(sh); m=autoHandleByes(m);
+      let m=initMatches(sh,cfg); m=autoHandleByes(m,cfg);
       const t={...tourn,matches:m,started:Date.now()}; delete t.champion;
       apply(t); setConfirm(null);
     }});
@@ -377,9 +444,10 @@ export default function App() {
     }});
   }
 
+  const cfg      = getCfgFromTourn(tourn);
   const M        = tourn?.matches||{};
-  const upcoming = tourn?getUpcoming(M):[];
-  const pending  = tourn?getAllPending(M):[];
+  const upcoming = tourn?getUpcoming(M,cfg.topo):[];
+  const pending  = tourn?getAllPending(M,cfg.topo):[];
 
   // ── Screens ────────────────────────────────────────────────────────────────
   if(screen==="loading") return (
@@ -608,7 +676,7 @@ export default function App() {
                 </div>
 
                 <div className="flex gap-3 items-start mb-2">
-                  {BRACKET_COLS.map((col,ci)=>(
+                  {cfg.bracketCols.map((col,ci)=>(
                     <div key={ci} style={{width:164}} className="flex flex-col flex-shrink-0">
                       <div className="text-[9px] text-slate-600 font-bold tracking-widest uppercase mb-1.5 text-center"
                         style={{borderBottom:"1px solid #1e293b",paddingBottom:4}}>
@@ -645,7 +713,7 @@ export default function App() {
                 {/* ─ VERLIERERBRACKET ─ */}
                 <div className="flex gap-3 items-start">
                   <div style={{width:164}} className="flex-shrink-0"/>
-                  {BRACKET_COLS.slice(1).map((col,ci)=>(
+                  {cfg.bracketCols.slice(1).map((col,ci)=>(
                     <div key={ci} style={{width:164}} className="flex flex-col flex-shrink-0">
                       <div className="flex flex-col gap-1.5">
                         {col.lIds.length>0
