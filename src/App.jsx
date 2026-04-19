@@ -192,10 +192,10 @@ function isPureBye(m) {
   return !m.players.some(Boolean)&&!!m.result&&!m.result.some(Boolean);
 }
 function getUpcoming(matches, topo) {
-  return topo.map(id=>matches[id]).filter(m=>m&&!m.result&&m.location&&!isPureBye(m));
+  return topo.map(id=>matches[id]).filter(m=>m&&!m.result&&m.location&&!isPureBye(m)&&m.players.some(Boolean));
 }
 function getAllPending(matches, topo) {
-  return topo.map(id=>matches[id]).filter(m=>m&&!m.result&&!isPureBye(m));
+  return topo.map(id=>matches[id]).filter(m=>m&&!m.result&&!isPureBye(m)&&m.players.some(Boolean));
 }
 function normalizeTourn(data) {
   if (!data?.matches) return data;
