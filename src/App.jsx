@@ -291,21 +291,27 @@ function BCard({match,isAdmin,onOpen}) {
   );
 }
 
-function NextCard({match,index,isAdmin,onOpen}) {
+function NextCard({match,badge,status,isAdmin,onOpen}) {
   const{id,players,result,location}=match;
-  const real=players.filter(Boolean), ready=real.length>=2&&!result;
+  const hasPlayers=players.some(Boolean);
+  const isActive=status==='active';
+  const isBereit=status==='bereit';
+  const isBusy=status==='busy';
+  const cardBg=isActive
+    ?"linear-gradient(135deg,rgba(5,46,22,0.95),rgba(20,83,45,0.95))"
+    :"linear-gradient(135deg,rgba(30,41,59,0.95),rgba(15,23,42,0.95))";
+  const cardBorder=isActive?"1px solid rgba(22,163,74,0.5)":"1px solid #334155";
   return (
     <div onClick={()=>isAdmin&&onOpen(id)}
-      style={{
-        background:ready?"linear-gradient(135deg,rgba(30,41,59,0.95),rgba(15,23,42,0.95))":"rgba(15,23,42,0.6)",
-        border:ready?"1px solid #334155":"1px solid rgba(51,65,85,0.4)",
-      }}
+      style={{background:cardBg,border:cardBorder}}
       className={`rounded-2xl p-4 transition-all ${isAdmin?"cursor-pointer hover:border-yellow-500/50":""}`}>
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
-          <div style={{background:"rgba(234,179,8,0.15)",border:"1px solid rgba(234,179,8,0.3)"}}
-            className="text-yellow-400 font-bold text-base w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0">
-            {index+1}
+          <div style={isActive
+              ?{background:"rgba(22,163,74,0.2)",border:"1px solid rgba(22,163,74,0.4)"}
+              :{background:"rgba(234,179,8,0.15)",border:"1px solid rgba(234,179,8,0.3)"}}
+            className={`${isActive?"text-green-400":"text-yellow-400"} font-bold text-xs min-w-8 h-8 px-1 rounded-lg flex items-center justify-center flex-shrink-0`}>
+            {badge}
           </div>
           <div>
             <div className="text-[9px] text-slate-500 tracking-widest font-bold uppercase">
@@ -321,7 +327,7 @@ function NextCard({match,index,isAdmin,onOpen}) {
       </div>
       <div style={{background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.05)"}}
         className="rounded-xl p-3">
-        {ready?(
+        {hasPlayers?(
           <div className="grid grid-cols-2 gap-1.5">
             {players.filter(Boolean).map((p,i)=>(
               <div key={i} className="flex items-center gap-1.5">
@@ -339,12 +345,17 @@ function NextCard({match,index,isAdmin,onOpen}) {
           </div>
         )}
       </div>
-      <div className={`rounded-lg px-3 py-1.5 mt-2 text-xs text-center
-        ${ready?"text-green-400":"text-slate-600"}`}
-        style={ready
+      <div className={`rounded-lg px-3 py-1.5 mt-2 text-xs text-center ${
+          isActive?"text-green-400":isBereit?"text-green-400":isBusy?"text-yellow-600":"text-slate-600"}`}
+        style={isActive||isBereit
           ?{background:"rgba(22,163,74,0.08)",border:"1px solid rgba(22,163,74,0.15)"}
+          :isBusy
+          ?{background:"rgba(234,179,8,0.06)",border:"1px solid rgba(234,179,8,0.15)"}
           :{background:"rgba(30,41,59,0.4)",border:"1px solid rgba(51,65,85,0.3)"}}>
-        {ready ? (isAdmin?"✓ Bereit · Antippen zum Eintragen":"✓ Bereit zum Spielen") : (isAdmin?"⏳ Spieler noch offen · Antippen zum Ort ändern":"⏳ Spieler noch nicht bekannt")}
+        {isActive ? "⏱ Läuft gerade"
+          : isBereit ? (isAdmin?"✓ Bereit · Antippen zum Eintragen":"✓ Bereit zum Spielen")
+          : isBusy ? "⏳ Spieler noch im Einsatz"
+          : "⏳ Spieler noch nicht bekannt"}
       </div>
     </div>
   );
@@ -448,6 +459,20 @@ export default function App() {
   const M        = tourn?.matches||{};
   const upcoming = tourn?getUpcoming(M,cfg.topo):[];
   const pending  = tourn?getAllPending(M,cfg.topo):[];
+
+  const upcomingByLoc = {};
+  for (const m of upcoming) {
+    if (!upcomingByLoc[m.location]) upcomingByLoc[m.location] = [];
+    upcomingByLoc[m.location].push(m);
+  }
+  const jetzt     = ['vorn','hinten'].map(l=>upcomingByLoc[l]?.[0]).filter(Boolean);
+  const naechstes = ['vorn','hinten'].map(l=>upcomingByLoc[l]?.[1]).filter(Boolean);
+  const jetztIds  = new Set(jetzt.map(m=>m.id));
+  const naechstesIds = new Set(naechstes.map(m=>m.id));
+  const danach    = upcoming.filter(m=>!jetztIds.has(m.id)&&!naechstesIds.has(m.id)).slice(0,4);
+  const busyPlayers = new Set(jetzt.flatMap(m=>m.players.filter(Boolean)));
+  function matchBereit(m){ return m.players.filter(Boolean).every(p=>!busyPlayers.has(p)); }
+  function locLabel(l){ return l==='vorn'?'VORN':'HINTEN'; }
 
   // ── Screens ────────────────────────────────────────────────────────────────
   if(screen==="loading") return (
@@ -621,13 +646,31 @@ export default function App() {
                   </div>
                 </div>
               ):(
-                <div className="p-4 space-y-3">
-                  <div className="text-slate-500 text-xs tracking-widest font-bold px-1">
-                    NÄCHSTE {upcoming.length} SPIELE
-                  </div>
-                  {upcoming.map((m,i)=>(
-                    <NextCard key={m.id} match={m} index={i} isAdmin={isAdmin} onOpen={openModal}/>
-                  ))}
+                <div className="p-4 space-y-5">
+                  {jetzt.length>0&&(
+                    <div>
+                      <div className="text-green-500 text-xs tracking-widest font-bold px-1 mb-2">🎮 JETZT</div>
+                      <div className="space-y-3">
+                        {jetzt.map(m=><NextCard key={m.id} match={m} badge={locLabel(m.location)} status="active" isAdmin={isAdmin} onOpen={openModal}/>)}
+                      </div>
+                    </div>
+                  )}
+                  {naechstes.length>0&&(
+                    <div>
+                      <div className="text-slate-400 text-xs tracking-widest font-bold px-1 mb-2">⏭ NÄCHSTES SPIEL</div>
+                      <div className="space-y-3">
+                        {naechstes.map(m=><NextCard key={m.id} match={m} badge={locLabel(m.location)} status={matchBereit(m)?'bereit':'busy'} isAdmin={isAdmin} onOpen={openModal}/>)}
+                      </div>
+                    </div>
+                  )}
+                  {danach.length>0&&(
+                    <div>
+                      <div className="text-slate-600 text-xs tracking-widest font-bold px-1 mb-2">📋 DANACH</div>
+                      <div className="space-y-3">
+                        {danach.map((m,i)=><NextCard key={m.id} match={m} badge={i+1} status={matchBereit(m)?'bereit':'busy'} isAdmin={isAdmin} onOpen={openModal}/>)}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
