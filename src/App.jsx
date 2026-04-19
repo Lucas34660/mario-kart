@@ -712,13 +712,10 @@ export default function App() {
 
                 {/* ─ VERLIERERBRACKET ─ */}
                 <div className="flex gap-3 items-start">
-                  {cfg.bracketCols.map((col,ci)=>(
+                  {cfg.bracketCols.filter(col=>col.lIds.length>0).map((col,ci)=>(
                     <div key={ci} style={{width:164}} className="flex flex-col flex-shrink-0">
                       <div className="flex flex-col gap-1.5">
-                        {col.lIds.length>0
-                          ?col.lIds.map(id=><BCard key={id} match={M[id]} isAdmin={isAdmin} onOpen={openModal}/>)
-                          :<div style={{height:60}} className="opacity-0"/>
-                        }
+                        {col.lIds.map(id=><BCard key={id} match={M[id]} isAdmin={isAdmin} onOpen={openModal}/>)}
                       </div>
                     </div>
                   ))}
